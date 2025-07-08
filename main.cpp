@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <chrono>
 #include <thread>
 #include <array>
@@ -135,6 +136,15 @@ public:
                     printf("ec: %08X\n", result.ec);
                     printf("ivs: %02d/%02d/%02d/%02d/%02d/%02d\n", result.ivs[0], result.ivs[1], result.ivs[2], result.ivs[3], result.ivs[4], result.ivs[5]);
                     printf("nature: %u\n", result.nature);
+                    std::ofstream file(std::format("initial_seed_{:08X}_frame_{}.txt", initial_seed, frame));
+                    file << std::format("initial seed: {:08X}\n", initial_seed);
+                    file << std::format("seed 0: {:08X}\n", seed_0);
+                    file << std::format("seed 1: {:08X}\n", seed_1);
+                    file << std::format("frame: {}\n", frame);
+                    file << std::format("ec: {:08X}\n", result.ec);
+                    file << std::format("ivs: {:02d}/{:02d}/{:02d}/{:02d}/{:02d}/{:02d}\n", result.ivs[0], result.ivs[1], result.ivs[2], result.ivs[3], result.ivs[4], result.ivs[5]);
+                    file << std::format("nature: {}\n", result.nature);
+                    file.close();
                 }
                 seed_0 = seed_1;
                 seed_1 = rng.next();
