@@ -3,6 +3,7 @@
 #include <chrono>
 #include <thread>
 #include <array>
+#include <unordered_set>
 #include <Core/RNG/MT.hpp>
 
 class ExtendedMT : public MT
@@ -127,7 +128,7 @@ public:
             for (u32 frame = startingFrame; frame < endingFrame; frame++)
             {
                 EggResult result = generateSpinda(seed_0, seed_1);
-                if (result.ec == 0x88888888)
+                if (targetECs.find(result.ec) != targetECs.end())
                 {
                     printf("initial seed: %08X\n", initial_seed);
                     printf("seed 0: %08X\n", seed_0);
@@ -136,7 +137,7 @@ public:
                     printf("ec: %08X\n", result.ec);
                     printf("ivs: %02d/%02d/%02d/%02d/%02d/%02d\n", result.ivs[0], result.ivs[1], result.ivs[2], result.ivs[3], result.ivs[4], result.ivs[5]);
                     printf("nature: %u\n", result.nature);
-                    std::ofstream file(std::format("initial_seed_{:08X}_frame_{}.txt", initial_seed, frame));
+                    std::ofstream file(std::format("ec_{:08X}_initial_seed_{:08X}_frame_{}.txt", result.ec, initial_seed, frame));
                     file << std::format("initial seed: {:08X}\n", initial_seed);
                     file << std::format("seed 0: {:08X}\n", seed_0);
                     file << std::format("seed 1: {:08X}\n", seed_1);
@@ -177,6 +178,8 @@ public:
     u32 startingSeed = 0x0;
     u32 endingSeed = 0xFFFF;
 
+    std::unordered_set<u32> targetECs;
+
 protected:
     u32 progress = 0;
     bool searching = false;
@@ -198,6 +201,17 @@ int main()
     scanf("%x", &searcher.startingSeed);
     printf("ending seed: 0x");
     scanf("%x", &searcher.endingSeed);
+
+    int ecCount;
+    printf("number of ECs to search for: ");
+    scanf("%d", &ecCount);
+    for (int i = 0; i < ecCount; i++)
+    {
+        u32 ec;
+        printf("EC %d: 0x", i);
+        scanf("%x", &ec);
+        searcher.targetECs.insert(ec);
+    }
 
     printf("\n");
     searcher.startSearch(threadCount);
