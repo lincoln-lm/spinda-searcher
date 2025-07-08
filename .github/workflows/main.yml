@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.os }} release
-          path: ${{github.workspace}}/build/spinda_searcher.exe
+          path: ${{github.workspace}}/build/Release/*
   release:
     needs: build
     runs-on: ubuntu-latest
